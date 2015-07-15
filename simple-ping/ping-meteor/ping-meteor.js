@@ -9,7 +9,7 @@ if (Meteor.isClient) {
   Template.ping.events({
     'click .client-ping': function () {
       console.log('client ping sent');
-      MassTransit.publish('MassTransitEndpoint.Messages:Ping', {});
+      MassTransit.publish('PingMassTransit:Ping', {});
     },
     'click .server-ping': function () {
       Meteor.call('ping');
@@ -34,7 +34,7 @@ if (Meteor.isServer) {
   MassTransit.init({host: 'localhost', queueName: 'ping-meteor'});
 
   MassTransit.onConnected = function() {
-    MassTransit.bind('MassTransitEndpoint.Messages:Pong');
+    MassTransit.bind('PingMassTransit:Pong');
   };
 
   MassTransit.inbound.find({}).observe({
@@ -49,7 +49,7 @@ if (Meteor.isServer) {
   Meteor.methods({
     ping: function() {
       console.log('server ping sent');
-      MassTransit.publish('MassTransitEndpoint.Messages:Ping', {});
+      MassTransit.publish('PingMassTransit:Ping', {});
     }
   });
 
