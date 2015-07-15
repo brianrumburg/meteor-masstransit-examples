@@ -1,0 +1,14 @@
+<body>
+  <h1>Ping Example</h1>
+  {{> ping}}
+  {{> pong}}
+</body>
+
+<template name="ping">
+  <button class="client-ping">Client Ping</button>
+  <button class="server-ping">Server Ping</button>
+</template>
+
+<template name="pong">
+  <p>Last pong value: {{lastPong}}</p>
+</template>
