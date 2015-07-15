@@ -1,0 +1,7 @@
+﻿
+namespace PingMassTransit
+{
+    class Ping
+    {
+    }
+}
