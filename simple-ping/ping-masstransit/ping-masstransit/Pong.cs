@@ -4,6 +4,9 @@ namespace PingMassTransit
 {
     class Pong
     {
-        public DateTime DateTime { get; set; }
+        public String SomeString { get; set; }
+        public int SomeInteger { get; set; }
+        public float SomeDecimal { get; set; }
+        public DateTime SomeDate { get; set; }
     }
 }

@@ -16,7 +16,18 @@ namespace PingMassTransit
                     subs.Handler<Ping>((ctx, msg) =>
                     {
                         Console.WriteLine("Ping received!");
-                        ctx.Respond(new Pong() { DateTime = DateTime.Now });
+                        Console.WriteLine(msg.SomeString);
+                        Console.WriteLine(msg.SomeInteger);
+                        Console.WriteLine(msg.SomeDecimal);
+                        Console.WriteLine("{0:O}", msg.SomeDate);
+
+                        ctx.Respond(new Pong()
+                        {
+                            SomeString = msg.SomeString,
+                            SomeInteger = msg.SomeInteger,
+                            SomeDecimal = msg.SomeDecimal,
+                            SomeDate = msg.SomeDate
+                        });
                     });
                 });
 
