@@ -30,12 +30,9 @@ if (Meteor.isClient) {
 }
 
 if (Meteor.isServer) {
-
   MassTransit.init({host: 'localhost', queueName: 'ping-meteor'});
 
-  MassTransit.onConnected = function() {
-    MassTransit.bind('PingMassTransit:Pong');
-  };
+  MassTransit.bind('PingMassTransit:Pong');
 
   MassTransit.inbound.find({}).observe({
     added: function(doc) {
