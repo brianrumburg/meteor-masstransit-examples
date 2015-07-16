@@ -1,15 +1,32 @@
 if (Meteor.isClient) {
 
   Template.pong.helpers({
+    lastPing: function(){
+      return Session.get('lastPing');
+    },
     lastPong: function(){
-      return Session.get("lastPong");
+      return Session.get('lastPong');
+    },
+    lastLatency: function(){
+      return Session.get('lastLatency');
     }
   });
 
   Template.ping.events({
     'click .client-ping': function () {
       console.log('client ping sent');
-      MassTransit.publish('PingMassTransit:Ping', {});
+
+      var lastPingDate = new Date();
+
+      Session.set('lastPing', lastPingDate.toISOString());
+
+      MassTransit.publish('PingMassTransit:Ping', {
+        SomeInteger: 1234,
+        SomeDecimal: 2345.6,
+        SomeString: 'Hello World!',
+        SomeDate: lastPingDate
+      });
+
     },
     'click .server-ping': function () {
       Meteor.call('ping');
@@ -21,7 +38,12 @@ if (Meteor.isClient) {
       console.log('client pong received')
       console.log(doc);
 
-      Session.set("lastPong", doc.message.dateTime);
+      var pingDate = new Date(doc.message.someDate);
+      var pongDate = new Date();
+      var latency = pongDate - pingDate;
+
+      Session.set('lastPong', pongDate.toISOString());
+      Session.set('lastLatency', latency);
 
       MassTransit.inbound.remove(doc._id);
     }
@@ -46,7 +68,12 @@ if (Meteor.isServer) {
   Meteor.methods({
     ping: function() {
       console.log('server ping sent');
-      MassTransit.publish('PingMassTransit:Ping', {});
+      MassTransit.publish('PingMassTransit:Ping', {
+        SomeInteger: 1234,
+        SomeDecimal: 2345.6,
+        SomeString: 'Hello World!',
+        SomeDate: new Date()
+      });
     }
   });
 
