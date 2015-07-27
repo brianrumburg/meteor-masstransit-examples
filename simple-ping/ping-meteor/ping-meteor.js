@@ -52,7 +52,17 @@ if (Meteor.isClient) {
 }
 
 if (Meteor.isServer) {
-  MassTransit.init({host: 'localhost', queueName: 'ping-meteor'});
+  MassTransit.init({
+    connection: {
+      host: 'localhost'
+    },
+    queue: {
+      name: 'ping-meteor'
+    },
+    exchange: {
+      type: 'fanout'
+    }
+  });
 
   MassTransit.bind('PingMassTransit:Pong');
 
