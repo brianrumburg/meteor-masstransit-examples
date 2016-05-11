@@ -1,5 +1,6 @@
 ﻿using System;
 using MassTransit;
+using System.Threading.Tasks;
 
 namespace PingMassTransit
 {
@@ -7,14 +8,12 @@ namespace PingMassTransit
     {
         static void Main(string[] args)
         {
-            ServiceBusFactory.New(sbc =>
+            var busControl = Bus.Factory.CreateUsingRabbitMq(cfg =>
             {
-                sbc.UseRabbitMq();
-                sbc.ReceiveFrom("rabbitmq://localhost/ping-masstransit");
-                sbc.Subscribe(subs =>
-                {
-                    subs.Handler<Ping>((ctx, msg) =>
-                    {
+                cfg.Host(new Uri("rabbitmq://rabbitmq-test"), host => { });
+                cfg.ReceiveEndpoint("ping-masstransit", e => {
+                    e.Handler<Ping>(ctx => Task.Run(() => {
+                        var msg = ctx.Message;
                         Console.WriteLine("Ping received!");
                         Console.WriteLine(msg.SomeString);
                         Console.WriteLine(msg.SomeInteger);
@@ -28,12 +27,15 @@ namespace PingMassTransit
                             SomeDecimal = msg.SomeDecimal,
                             SomeDate = msg.SomeDate
                         });
-                    });
+                    }));
                 });
-
-                Console.WriteLine("Waiting for Ping...");
-                Console.WriteLine("Press Ctrl+C to exit.");
             });
+
+            busControl.Start();
+            Console.WriteLine("Waiting for Ping...");
+            Console.WriteLine("Press any key to exit.");
+            Console.ReadLine();
+            busControl.Stop();
         }
     }
 }
