@@ -12,6 +12,24 @@ namespace PingMassTransit
             {
                 cfg.Host(new Uri("rabbitmq://rabbitmq-test"), host => { });
                 cfg.ReceiveEndpoint("ping-server-queue", e => {
+                    e.Handler<IPing>(ctx => Task.Run(() => {
+                        var msg = ctx.Message;
+                        Console.WriteLine("Ping received!");
+                        Console.WriteLine(msg.SomeString);
+                        Console.WriteLine(msg.SomeInteger);
+                        Console.WriteLine(msg.SomeDecimal);
+                        Console.WriteLine("{0:O}", msg.SomeDate);
+
+                        ctx.Respond(new Pong()
+                        {
+                            PongField = "From IPing Handler",
+                            SomeString = msg.SomeString,
+                            SomeInteger = msg.SomeInteger,
+                            SomeDecimal = msg.SomeDecimal,
+                            SomeDate = msg.SomeDate
+                        });
+                    }));
+
                     e.Handler<Ping>(ctx => Task.Run(() => {
                         var msg = ctx.Message;
                         Console.WriteLine("Ping received!");
@@ -22,6 +40,7 @@ namespace PingMassTransit
 
                         ctx.Respond(new Pong()
                         {
+                            PongField = "From Ping Handler",
                             SomeString = msg.SomeString,
                             SomeInteger = msg.SomeInteger,
                             SomeDecimal = msg.SomeDecimal,
