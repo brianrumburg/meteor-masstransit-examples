@@ -14,7 +14,7 @@ namespace PingMassTransit
                 cfg.ReceiveEndpoint("ping-server-queue", e => {
                     e.Handler<IPing>(ctx => Task.Run(() => {
                         var msg = ctx.Message;
-                        Console.WriteLine("Ping received!");
+                        Console.WriteLine("IPing received!");
                         Console.WriteLine(msg.SomeString);
                         Console.WriteLine(msg.SomeInteger);
                         Console.WriteLine(msg.SomeDecimal);
@@ -23,6 +23,15 @@ namespace PingMassTransit
                         ctx.Respond(new Pong()
                         {
                             PongField = "From IPing Handler",
+                            SomeString = msg.SomeString,
+                            SomeInteger = msg.SomeInteger,
+                            SomeDecimal = msg.SomeDecimal,
+                            SomeDate = msg.SomeDate
+                        });
+
+                        ctx.Respond(new Pong2()
+                        {
+                            Pong2Field = "From IPing Handler",
                             SomeString = msg.SomeString,
                             SomeInteger = msg.SomeInteger,
                             SomeDecimal = msg.SomeDecimal,
@@ -37,6 +46,7 @@ namespace PingMassTransit
                         Console.WriteLine(msg.SomeInteger);
                         Console.WriteLine(msg.SomeDecimal);
                         Console.WriteLine("{0:O}", msg.SomeDate);
+                        Console.WriteLine(msg.PingField);
 
                         ctx.Respond(new Pong()
                         {
@@ -48,26 +58,27 @@ namespace PingMassTransit
                         });
                     }));
 
-                    e.Handler<Pong>(ctx => Task.Run(() => {
-                        var msg = ctx.Message;
-                        Console.WriteLine("Pong received!");
-                        Console.WriteLine(msg.SomeString);
-                        Console.WriteLine(msg.SomeInteger);
-                        Console.WriteLine(msg.SomeDecimal);
-                        Console.WriteLine("{0:O}", msg.SomeDate);
-                    }));
+                    //e.Handler<Pong>(ctx => Task.Run(() => {
+                    //    var msg = ctx.Message;
+                    //    Console.WriteLine("Pong received!");
+                    //    Console.WriteLine(msg.SomeString);
+                    //    Console.WriteLine(msg.SomeInteger);
+                    //    Console.WriteLine(msg.SomeDecimal);
+                    //    Console.WriteLine("{0:O}", msg.SomeDate);
+                    //}));
                 });
             });
 
             busControl.Start();
 
-            busControl.Publish(new Ping()
-            {
-                SomeString = "111",
-                SomeInteger = 222,
-                SomeDecimal = (float) 33.44,
-                SomeDate = DateTime.Now
-            });
+            //busControl.Publish(new Ping()
+            //{
+            //    SomeString = "111",
+            //    SomeInteger = 222,
+            //    SomeDecimal = (float)33.44,
+            //    SomeDate = DateTime.Now,
+            //    PingField = "PING"
+            //});
 
             Console.WriteLine("Waiting for Ping...");
             Console.WriteLine("Press any key to exit.");
